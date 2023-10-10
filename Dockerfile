@@ -4,8 +4,14 @@ FROM ruby:2.7
 # Set the 'app' as the working directory inside the image
 WORKDIR /app
 
-# Install Rails gem
-RUN gem install rails
+# Copy the Gemfile and Gemfile.lock from the host to the working directory inside the image
+COPY Gemfile Gemfile.lock ./
 
-# Start the main process (bash for now)
-CMD ["bash"]
+# Install bundler and gems
+RUN gem install bundler && bundle install
+
+# Copy the rest of the Rails app
+COPY . .
+
+# Start the main process (puma server by default for Rails)
+CMD ["rails", "server", "-b", "0.0.0.0"]
